@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Frostxa Dev — Premium Roblox Scripts & Assets</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ice:#a8f0ff;--cyan:#00e5ff;--gold:#ffd700;--gold2:#ffaa00;
+  --pink:#ff3cac;--violet:#784ba0;--green:#00ff88;
+  --dark:#060912;--dark2:#0d1225;--dark3:#111830;--card:#0a1020;
+  --border:rgba(0,229,255,0.25);--glow-c:rgba(0,229,255,0.5);
+  --glow-g:rgba(255,215,0,0.4);--glow-p:rgba(255,60,172,0.4);
+  --px:'Press Start 2P',monospace;--mono:'Share Tech Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--mono);background:var(--dark);color:#cfe8ff;overflow-x:hidden;cursor:none;}
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;z-index:9998;}
+#cursor{position:fixed;width:12px;height:12px;background:var(--gold);box-shadow:0 0 10px var(--gold);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);clip-path:polygon(0 0,100% 0,100% 75%,75% 100%,0 100%);transition:width .15s,height .15s,background .15s;}
+#cursor.big{width:20px;height:20px;background:var(--cyan);box-shadow:0 0 18px var(--cyan);}
+#stars-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:64px;background:rgba(6,9,18,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);}
+.nav-logo{font-family:var(--px);font-size:13px;color:var(--cyan);text-shadow:0 0 8px var(--cyan);display:flex;align-items:center;gap:8px;}
+.nav-logo .spin{display:inline-block;animation:spin 8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.nav-links{display:flex;gap:4px;list-style:none;}
+.nav-links a{font-family:var(--px);font-size:8px;color:#5a8090;text-decoration:none;padding:7px 12px;border:1px solid transparent;transition:all .2s;letter-spacing:1px;}
+.nav-links a:hover,.nav-links a.active{color:var(--cyan);border-color:var(--border);background:rgba(0,229,255,0.05);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.status-dot{width:8px;height:8px;border-radius:50%;animation:pulse-dot 2s ease-in-out infinite;}
+.status-dot.online{background:var(--green);box-shadow:0 0 8px var(--green);}
+.status-dot.offline{background:#ff4444;box-shadow:0 0 8px #ff4444;}
+.status-label{font-family:var(--px);font-size:8px;color:#3a7a6a;}
+.nav-cta{font-family:var(--px);font-size:8px;color:var(--dark);background:linear-gradient(90deg,var(--gold),var(--gold2));padding:8px 16px;border:none;cursor:pointer;text-decoration:none;box-shadow:0 0 12px var(--glow-g);transition:all .2s;clip-path:polygon(6px 0%,100% 0%,100% calc(100% - 6px),calc(100% - 6px) 100%,0% 100%,0% 6px);}
+.nav-cta:hover{box-shadow:0 0 24px var(--glow-g);filter:brightness(1.1);}
+@keyframes pulse-dot{0%,100%{opacity:1;}50%{opacity:.4;}}
+
+/* TICKER */
+.ticker-wrap{position:relative;z-index:10;background:rgba(0,229,255,0.05);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:9px 0;overflow:hidden;margin-top:64px;}
+.ticker{display:flex;animation:ticker 30s linear infinite;white-space:nowrap;}
+@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.ticker-item{font-family:var(--px);font-size:8px;color:var(--cyan);padding:0 36px;opacity:.8;}
+.ticker-item span{color:var(--gold);margin-right:6px;}
+
+/* HERO */
+.hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 60px;overflow:hidden;}
+.hero-orb{position:absolute;width:500px;height:500px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,0.07) 0%,rgba(120,75,160,0.05) 50%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);animation:orbPulse 4s ease-in-out infinite;pointer-events:none;}
+@keyframes orbPulse{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.6;}50%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}}
+.corner{position:absolute;width:60px;height:60px;border-color:var(--cyan);border-style:solid;opacity:.4;}
+.corner-tl{top:80px;left:20px;border-width:2px 0 0 2px;}
+.corner-tr{top:80px;right:20px;border-width:2px 2px 0 0;}
+.corner-bl{bottom:20px;left:20px;border-width:0 0 2px 2px;}
+.corner-br{bottom:20px;right:20px;border-width:0 2px 2px 0;}
+.pf{position:absolute;animation:floatUp 6s ease-in-out infinite;filter:drop-shadow(0 0 8px var(--cyan));}
+@keyframes floatUp{0%,100%{transform:translateY(0);}50%{transform:translateY(-20px);}}
+.pf1{top:15%;left:7%;font-size:32px;animation-delay:0s;opacity:.5;}
+.pf2{top:22%;right:8%;font-size:26px;animation-delay:1.2s;opacity:.45;}
+.pf3{top:55%;left:4%;font-size:28px;animation-delay:2.4s;opacity:.4;}
+.pf4{top:65%;right:5%;font-size:36px;animation-delay:.6s;opacity:.45;}
+.hero-eyebrow{font-family:var(--px);font-size:9px;color:var(--gold);letter-spacing:5px;margin-bottom:20px;text-shadow:0 0 10px var(--gold);animation:fadeUp .8s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
+.hero-pixel{display:grid;grid-template-columns:repeat(7,9px);grid-template-rows:repeat(7,9px);gap:2px;margin:0 auto 20px;opacity:.3;}
+.px-c{background:var(--cyan);box-shadow:0 0 3px var(--cyan);}
+.px-g{background:var(--gold);box-shadow:0 0 3px var(--gold);}
+.px-e{background:transparent;}
+.hero-title{font-family:var(--px);font-size:clamp(32px,6vw,72px);color:transparent;background:linear-gradient(135deg,var(--ice) 0%,var(--cyan) 40%,var(--violet) 80%);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 16px rgba(0,229,255,.55));letter-spacing:3px;position:relative;margin-bottom:16px;animation:fadeUp .8s .15s ease both;}
+.hero-sub{font-size:14px;color:#7ab8d0;margin-bottom:14px;letter-spacing:2px;animation:fadeUp .8s .3s ease both;}
+.hero-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:36px;animation:fadeUp .8s .45s ease both;}
+.tag{font-family:var(--px);font-size:7px;color:var(--gold);border:1px solid rgba(255,215,0,.35);padding:5px 10px;background:rgba(255,215,0,.05);}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .6s ease both;}
+.btn-p{font-family:var(--px);font-size:9px;color:var(--dark);background:linear-gradient(90deg,var(--cyan),var(--ice));padding:14px 30px;border:none;cursor:pointer;text-decoration:none;display:inline-block;box-shadow:0 0 18px var(--glow-c);transition:all .2s;clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);}
+.btn-p:hover{box-shadow:0 0 32px var(--glow-c);transform:translateY(-2px);}
+.btn-o{font-family:var(--px);font-size:9px;color:var(--gold);background:transparent;padding:12px 28px;border:2px solid var(--gold);cursor:pointer;text-decoration:none;display:inline-block;box-shadow:0 0 10px var(--glow-g);transition:all .2s;clip-path:polygon(0% 8px,8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%);}
+.btn-o:hover{background:rgba(255,215,0,.08);box-shadow:0 0 24px var(--glow-g);transform:translateY(-2px);}
+
+/* COUNTDOWN PROMO */
+.promo-bar{position:relative;z-index:10;background:linear-gradient(90deg,rgba(255,60,172,.12),rgba(120,75,160,.12),rgba(255,60,172,.12));border-top:1px solid rgba(255,60,172,.3);border-bottom:1px solid rgba(255,60,172,.3);padding:12px 20px;text-align:center;display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;}
+.promo-text{font-family:var(--px);font-size:9px;color:var(--pink);text-shadow:0 0 8px var(--pink);}
+.countdown{display:flex;gap:8px;align-items:center;}
+.cd-block{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.cd-num{font-family:var(--px);font-size:18px;color:var(--gold);text-shadow:0 0 10px var(--gold);min-width:36px;text-align:center;}
+.cd-lbl{font-family:var(--px);font-size:6px;color:#3a5a6a;}
+.cd-sep{font-family:var(--px);font-size:18px;color:var(--pink);animation:blink .8s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+.promo-badge{font-family:var(--px);font-size:8px;background:var(--pink);color:#fff;padding:5px 12px;box-shadow:0 0 12px var(--glow-p);}
+
+/* SECTION COMMONS */
+section{position:relative;z-index:10;}
+.wrap{max-width:1280px;margin:0 auto;padding:80px 40px;}
+.sec-hdr{margin-bottom:52px;}
+.sec-lbl{font-family:var(--px);font-size:8px;color:var(--pink);letter-spacing:5px;margin-bottom:12px;}
+.sec-title{font-family:var(--px);font-size:clamp(20px,3.5vw,34px);color:var(--ice);line-height:1.4;text-shadow:0 0 16px rgba(168,240,255,.3);}
+.sec-title em{font-style:normal;color:var(--gold);text-shadow:0 0 14px var(--glow-g);}
+.sec-line{margin-top:16px;width:72px;height:3px;background:linear-gradient(90deg,var(--cyan),transparent);position:relative;}
+.sec-line::after{content:'■';position:absolute;right:0;top:-7px;font-size:7px;color:var(--cyan);}
+
+/* FILTER BAR */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
+.filter-btn{font-family:var(--px);font-size:8px;padding:8px 16px;background:transparent;color:#5a8090;border:1px solid rgba(0,229,255,.15);cursor:pointer;transition:all .2s;letter-spacing:1px;}
+.filter-btn:hover,.filter-btn.active{color:var(--cyan);border-color:var(--cyan);background:rgba(0,229,255,.07);box-shadow:0 0 10px rgba(0,229,255,.15);}
+.search-bar{display:flex;gap:0;margin-bottom:36px;}
+.search-input{flex:1;font-family:var(--mono);font-size:13px;background:var(--card);border:1px solid var(--border);border-right:none;color:var(--ice);padding:10px 16px;outline:none;max-width:320px;}
+.search-input::placeholder{color:#2a4a5a;}
+.search-input:focus{border-color:var(--cyan);}
+.search-btn{font-family:var(--px);font-size:8px;background:var(--cyan);color:var(--dark);border:none;padding:10px 16px;cursor:pointer;}
+
+/* PRODUCTS */
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.p-card{background:var(--card);border:1px solid rgba(0,229,255,.15);position:relative;overflow:hidden;transition:all .3s;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));}
+.p-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,229,255,.03) 0%,transparent 60%);pointer-events:none;}
+.p-card:hover{border-color:var(--cyan);box-shadow:0 0 24px rgba(0,229,255,.15),0 16px 40px rgba(0,0,0,.5);transform:translateY(-5px);}
+.p-card.hidden{display:none;}
+.p-thumb{width:100%;height:180px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.p-thumb::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.02) 1px,transparent 1px);background-size:18px 18px;}
+.t-fish{background:linear-gradient(135deg,#001a2e,#003d5c);}
+.t-map{background:linear-gradient(135deg,#1a1a00,#3a2e00);}
+.t-combat{background:linear-gradient(135deg,#1a0010,#3a0025);}
+.t-eco{background:linear-gradient(135deg,#001a00,#003300);}
+.t-build{background:linear-gradient(135deg,#0d0d1a,#1a1a3d);}
+.t-quest{background:linear-gradient(135deg,#1a0a00,#3a1800);}
+.p-icon{font-size:64px;position:relative;z-index:2;animation:iconFloat 4s ease-in-out infinite;}
+@keyframes iconFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.p-badge{position:absolute;top:10px;right:10px;font-family:var(--px);font-size:7px;padding:4px 9px;z-index:3;}
+.badge-hot{background:var(--dark);border:1px solid var(--pink);color:var(--pink);text-shadow:0 0 6px var(--pink);animation:glow-p 1.5s ease-in-out infinite;}
+.badge-new{background:var(--dark);border:1px solid var(--green);color:var(--green);}
+.badge-pop{background:var(--dark);border:1px solid var(--gold);color:var(--gold);}
+.badge-prem{background:var(--dark);border:1px solid var(--cyan);color:var(--cyan);}
+@keyframes glow-p{0%,100%{box-shadow:0 0 4px var(--glow-p);}50%{box-shadow:0 0 14px var(--glow-p);}}
+.p-body{padding:20px;}
+.p-cat{font-family:var(--px);font-size:7px;color:var(--cyan);opacity:.7;margin-bottom:6px;letter-spacing:2px;}
+.p-name{font-family:var(--px);font-size:13px;color:var(--ice);margin-bottom:8px;line-height:1.5;}
+.p-desc{font-size:12px;color:#4a6a7a;margin-bottom:14px;line-height:1.7;}
+.p-feats{display:flex;flex-direction:column;gap:4px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px dashed rgba(0,229,255,.12);}
+.p-feat{font-size:11px;color:#3a6070;display:flex;align-items:center;gap:7px;}
+.p-feat::before{content:'▶';font-size:6px;color:var(--cyan);flex-shrink:0;}
+.p-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.p-price{font-family:var(--px);font-size:16px;color:var(--gold);text-shadow:0 0 8px var(--glow-g);}
+.p-price-orig{font-size:10px;color:#3a5a6a;text-decoration:line-through;margin-bottom:2px;}
+.p-buy{font-family:var(--px);font-size:8px;padding:10px 14px;background:transparent;color:var(--cyan);border:1.5px solid var(--cyan);cursor:pointer;transition:all .2s;clip-path:polygon(5px 0%,100% 0%,100% calc(100% - 5px),calc(100% - 5px) 100%,0% 100%,0% 5px);white-space:nowrap;}
+.p-buy:hover{background:var(--cyan);color:var(--dark);box-shadow:0 0 16px var(--glow-c);}
+.p-stars{font-size:11px;color:var(--gold);margin-bottom:4px;}
+.p-review-count{font-size:10px;color:#3a5a6a;}
+
+/* PORTFOLIO */
+.port-section{background:var(--dark2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.port-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.port-item{position:relative;aspect-ratio:16/10;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.port-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:70px;transition:transform .5s;}
+.pb1{background:linear-gradient(135deg,#00131f,#003040);}
+.pb2{background:linear-gradient(135deg,#1a0d00,#3a2000);}
+.pb3{background:linear-gradient(135deg,#0d001a,#25004a);}
+.pb4{background:linear-gradient(135deg,#001a0d,#003d25);}
+.pb5{background:linear-gradient(135deg,#1a001a,#3a003a);}
+.pb6{background:linear-gradient(135deg,#001020,#002040);}
+.port-item:hover .port-bg{transform:scale(1.08);}
+.port-ov{position:absolute;inset:0;background:rgba(6,9,18,.78);opacity:0;transition:opacity .3s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:20px;text-align:center;}
+.port-item:hover .port-ov{opacity:1;}
+.port-ov-title{font-family:var(--px);font-size:11px;color:var(--ice);}
+.port-ov-desc{font-size:11px;color:#4a7a8a;}
+.port-ov-tag{font-family:var(--px);font-size:7px;color:var(--gold);border:1px solid rgba(255,215,0,.4);padding:3px 8px;}
+.port-item::before{content:'';position:absolute;inset:0;border:1px solid rgba(0,229,255,.1);z-index:2;pointer-events:none;transition:border-color .3s;}
+.port-item:hover::before{border-color:var(--cyan);}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:2px;}
+.stat-cell{background:var(--dark3);padding:36px 20px;text-align:center;border:1px solid rgba(0,229,255,.07);position:relative;overflow:hidden;transition:border-color .3s;}
+.stat-cell:hover{border-color:var(--border);}
+.stat-cell::after{content:'';position:absolute;bottom:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);transform:scaleX(0);transition:transform .4s;}
+.stat-cell:hover::after{transform:scaleX(1);}
+.stat-num{font-family:var(--px);font-size:clamp(24px,3.5vw,42px);color:var(--gold);text-shadow:0 0 14px var(--glow-g);margin-bottom:8px;display:block;line-height:1;}
+.stat-lbl{font-family:var(--px);font-size:8px;color:#2a4a5a;letter-spacing:2px;}
+
+/* ORDER SECTION */
+.order-section{background:var(--dark2);border-top:1px solid var(--border);}
+.order-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+@media(max-width:800px){.order-grid{grid-template-columns:1fr;}}
+.order-info{}
+.order-contact-cards{display:flex;flex-direction:column;gap:12px;margin-top:24px;}
+.contact-card{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid rgba(0,229,255,.15);padding:16px 20px;cursor:pointer;transition:all .2s;text-decoration:none;}
+.contact-card:hover{border-color:var(--cyan);box-shadow:0 0 16px rgba(0,229,255,.12);transform:translateX(4px);}
+.contact-card.wa:hover{border-color:#25D366;box-shadow:0 0 16px rgba(37,211,102,.2);}
+.contact-card.mail:hover{border-color:var(--gold);box-shadow:0 0 16px var(--glow-g);}
+.contact-card.disc:hover{border-color:#5865f2;box-shadow:0 0 16px rgba(88,101,242,.3);}
+.cc-icon{font-size:28px;flex-shrink:0;}
+.cc-body{}
+.cc-label{font-family:var(--px);font-size:9px;margin-bottom:4px;}
+.cc-label.wa{color:#25D366;}
+.cc-label.mail{color:var(--gold);}
+.cc-label.disc{color:#5865f2;}
+.cc-val{font-size:12px;color:#4a7a8a;}
+.cc-arr{margin-left:auto;color:var(--cyan);font-size:18px;opacity:.5;}
+
+/* ORDER FORM */
+.order-form-wrap{background:var(--card);border:1px solid var(--border);padding:28px;}
+.form-title{font-family:var(--px);font-size:13px;color:var(--ice);margin-bottom:24px;}
+.form-title span{color:var(--cyan);}
+.form-group{margin-bottom:16px;}
+.form-label{font-family:var(--px);font-size:8px;color:var(--cyan);letter-spacing:1px;display:block;margin-bottom:7px;}
+.form-input,.form-select,.form-textarea{width:100%;font-family:var(--mono);font-size:13px;background:var(--dark2);border:1px solid rgba(0,229,255,.2);color:var(--ice);padding:10px 14px;outline:none;transition:border-color .2s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,.15);}
+.form-input::placeholder,.form-textarea::placeholder{color:#2a4a5a;}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%2300e5ff' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+.form-select option{background:var(--dark2);}
+.form-textarea{resize:vertical;min-height:80px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.payment-opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px;}
+.pay-opt{font-family:var(--px);font-size:7px;padding:8px 6px;background:var(--dark2);border:1px solid rgba(0,229,255,.15);color:#4a7a8a;cursor:pointer;text-align:center;transition:all .2s;}
+.pay-opt:hover,.pay-opt.sel{border-color:var(--cyan);color:var(--cyan);background:rgba(0,229,255,.07);}
+.form-submit{width:100%;font-family:var(--px);font-size:10px;padding:14px;background:linear-gradient(90deg,var(--cyan),var(--ice));color:var(--dark);border:none;cursor:pointer;margin-top:8px;box-shadow:0 0 16px var(--glow-c);transition:all .2s;clip-path:polygon(8px 0%,100% 0%,100% calc(100% - 8px),calc(100% - 8px) 100%,0% 100%,0% 8px);}
+.form-submit:hover{box-shadow:0 0 28px var(--glow-c);filter:brightness(1.05);}
+
+/* REVIEWS */
+.reviews-section{background:var(--dark);}
+.reviews-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;}
+.rv-card{background:var(--dark3);border:1px solid rgba(0,229,255,.09);padding:24px;transition:all .3s;}
+.rv-card:hover{border-color:rgba(255,215,0,.25);box-shadow:0 0 16px rgba(255,215,0,.05);}
+.rv-q{font-size:26px;color:var(--gold);opacity:.35;margin-bottom:8px;font-family:serif;}
+.rv-stars{color:var(--gold);font-size:11px;margin-bottom:10px;text-shadow:0 0 5px var(--gold);}
+.rv-text{font-size:12px;color:#4a7080;line-height:1.8;margin-bottom:16px;}
+.rv-foot{display:flex;align-items:center;gap:10px;padding-top:14px;border-top:1px dashed rgba(0,229,255,.1);}
+.rv-av{width:36px;height:36px;background:var(--dark2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.rv-name{font-family:var(--px);font-size:9px;color:var(--ice);margin-bottom:2px;}
+.rv-role{font-size:11px;color:#2a4a5a;}
+.rv-verified{font-family:var(--px);font-size:6px;color:var(--green);border:1px solid rgba(0,255,136,.3);padding:2px 6px;margin-left:auto;}
+
+/* FAQ */
+.faq-section{background:var(--dark2);border-top:1px solid var(--border);}
+.faq-list{display:flex;flex-direction:column;gap:8px;max-width:800px;}
+.faq-item{background:var(--card);border:1px solid rgba(0,229,255,.12);overflow:hidden;transition:border-color .2s;}
+.faq-item.open{border-color:var(--border);}
+.faq-q{font-family:var(--px);font-size:10px;color:var(--ice);padding:18px 20px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;line-height:1.5;user-select:none;}
+.faq-q:hover{color:var(--cyan);}
+.faq-arrow{font-size:14px;color:var(--cyan);flex-shrink:0;transition:transform .3s;}
+.faq-item.open .faq-arrow{transform:rotate(180deg);}
+.faq-a{font-size:13px;color:#4a7080;line-height:1.8;padding:0 20px;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .35s ease;}
+.faq-item.open .faq-a{max-height:300px;padding:0 20px 18px;}
+
+/* PRICING */
+.price-section{background:var(--dark);}
+.price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:900px){.price-grid{grid-template-columns:1fr;}}
+.pc{background:var(--card);border:1px solid rgba(0,229,255,.12);padding:32px 24px;position:relative;transition:all .3s;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));}
+.pc.feat{border-color:var(--gold);background:linear-gradient(160deg,rgba(255,215,0,.05) 0%,var(--card) 100%);box-shadow:0 0 24px rgba(255,215,0,.1);transform:scale(1.02);}
+.pc:hover:not(.feat){border-color:var(--border);transform:translateY(-4px);}
+.pc-top-badge{position:absolute;top:-1px;right:24px;font-family:var(--px);font-size:7px;background:var(--gold);color:var(--dark);padding:4px 12px;}
+.pc-plan{font-family:var(--px);font-size:10px;color:var(--cyan);margin-bottom:16px;letter-spacing:2px;}
+.pc.feat .pc-plan{color:var(--gold);}
+.pc-amount{font-family:var(--px);font-size:28px;color:var(--ice);margin-bottom:4px;}
+.pc-period{font-size:12px;color:#2a4a5a;margin-bottom:24px;}
+.pc-items{list-style:none;margin-bottom:28px;display:flex;flex-direction:column;gap:9px;}
+.pc-items li{font-size:12px;color:#3a6070;display:flex;align-items:center;gap:9px;}
+.pc-items li::before{content:'✓';color:var(--green);font-size:10px;flex-shrink:0;}
+.pc-items li.off{color:#1a2a34;}
+.pc-items li.off::before{content:'✕';color:#1a2a34;}
+.pc-btn{width:100%;font-family:var(--px);font-size:9px;padding:12px;background:transparent;color:var(--cyan);border:1.5px solid var(--cyan);cursor:pointer;transition:all .2s;}
+.pc.feat .pc-btn{background:var(--gold);color:var(--dark);border-color:var(--gold);box-shadow:0 0 16px var(--glow-g);}
+.pc-btn:hover{background:var(--cyan);color:var(--dark);box-shadow:0 0 16px var(--glow-c);}
+.pc.feat .pc-btn:hover{filter:brightness(1.1);}
+
+/* LIVE CHAT WIDGET */
+.chat-widget{position:fixed;bottom:24px;right:24px;z-index:5000;display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
+.chat-bubble{width:56px;height:56px;background:linear-gradient(135deg,var(--cyan),var(--violet));border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 0 20px rgba(0,229,255,.4),0 4px 20px rgba(0,0,0,.5);transition:all .2s;position:relative;clip-path:polygon(20% 0%,80% 0%,100% 20%,100% 80%,80% 100%,20% 100%,0% 80%,0% 20%);}
+.chat-bubble:hover{transform:scale(1.08);box-shadow:0 0 32px rgba(0,229,255,.6);}
+.chat-notif{position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:var(--pink);border-radius:50%;border:2px solid var(--dark);animation:pulse-dot 2s ease-in-out infinite;}
+.chat-panel{background:var(--dark3);border:1px solid var(--border);width:300px;box-shadow:0 0 30px rgba(0,229,255,.1);display:none;flex-direction:column;overflow:hidden;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%);}
+.chat-panel.open{display:flex;}
+.chat-head{background:linear-gradient(90deg,rgba(0,229,255,.15),rgba(120,75,160,.15));padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+.chat-head-title{font-family:var(--px);font-size:10px;color:var(--cyan);}
+.chat-head-sub{font-size:11px;color:#3a6a7a;}
+.chat-close{margin-left:auto;background:none;border:none;color:#3a6a7a;cursor:pointer;font-size:18px;line-height:1;}
+.chat-close:hover{color:var(--pink);}
+.chat-body{padding:16px;display:flex;flex-direction:column;gap:8px;}
+.chat-msg{background:rgba(0,229,255,.07);border:1px solid var(--border);padding:10px 14px;font-size:12px;color:#6a9aaa;line-height:1.6;border-radius:2px;}
+.chat-options{display:flex;flex-direction:column;gap:6px;margin-top:4px;}
+.chat-opt-btn{font-family:var(--px);font-size:8px;padding:10px 14px;background:transparent;border:1px solid rgba(0,229,255,.2);color:var(--cyan);cursor:pointer;text-align:left;transition:all .2s;text-decoration:none;display:block;}
+.chat-opt-btn:hover{background:rgba(0,229,255,.08);border-color:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,.15);}
+.chat-opt-btn.wa{border-color:rgba(37,211,102,.3);color:#25D366;}
+.chat-opt-btn.wa:hover{background:rgba(37,211,102,.07);}
+.chat-opt-btn.disc{border-color:rgba(88,101,242,.3);color:#5865f2;}
+.chat-opt-btn.disc:hover{background:rgba(88,101,242,.07);}
+
+/* TOAST */
+.toast{position:fixed;top:80px;right:24px;background:var(--dark3);border:1px solid var(--green);padding:14px 20px;font-family:var(--px);font-size:8px;color:var(--green);box-shadow:0 0 16px rgba(0,255,136,.2);z-index:9999;transform:translateY(-20px);opacity:0;transition:all .4s cubic-bezier(.34,1.56,.64,1);min-width:240px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* FOOTER */
+footer{position:relative;z-index:10;background:var(--dark);border-top:1px solid var(--border);padding:32px 40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.foot-logo{font-family:var(--px);font-size:11px;color:var(--cyan);text-shadow:0 0 8px var(--cyan);}
+.foot-copy{font-size:11px;color:#1a3040;text-align:center;}
+.foot-links{display:flex;gap:16px;}
+.foot-links a{font-size:11px;color:#1a3040;text-decoration:none;transition:color .2s;}
+.foot-links a:hover{color:var(--cyan);}
+
+/* ANIMATIONS */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .6s ease,transform .6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-stagger>*{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease;}
+.reveal-stagger.visible>*:nth-child(1){opacity:1;transform:none;transition-delay:.04s;}
+.reveal-stagger.visible>*:nth-child(2){opacity:1;transform:none;transition-delay:.1s;}
+.reveal-stagger.visible>*:nth-child(3){opacity:1;transform:none;transition-delay:.16s;}
+.reveal-stagger.visible>*:nth-child(4){opacity:1;transform:none;transition-delay:.22s;}
+.reveal-stagger.visible>*:nth-child(5){opacity:1;transform:none;transition-delay:.28s;}
+.reveal-stagger.visible>*:nth-child(6){opacity:1;transform:none;transition-delay:.34s;}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  nav{padding:0 16px;}
+  .nav-links{display:none;}
+  .wrap{padding:60px 16px;}
+  .products-grid{grid-template-columns:1fr;}
+  .port-grid{grid-template-columns:repeat(2,1fr);}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  footer{flex-direction:column;align-items:center;text-align:center;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<canvas id="stars-canvas"></canvas>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✓ Mengarahkan ke WhatsApp...</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo"><span class="spin">❄</span> FROSTXA DEV</div>
+  <ul class="nav-links">
+    <li><a href="#home">HOME</a></li>
+    <li><a href="#products">PRODUK</a></li>
+    <li><a href="#portfolio">PORTFOLIO</a></li>
+    <li><a href="#order">ORDER</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="#pricing">HARGA</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="status-dot online" id="statusDot"></div>
+    <span class="status-label" id="statusLabel">ONLINE</span>
+    <a href="#order" class="nav-cta">✦ ORDER SEKARANG</a>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker-wrap" style="margin-top:64px;">
+  <div class="ticker">
+    <span class="ticker-item"><span>⚡</span>FISHING FORGER SCRIPT</span>
+    <span class="ticker-item"><span>✦</span>RPG MAP ASSETS PACK</span>
+    <span class="ticker-item"><span>⚡</span>COMBAT SYSTEM PRO</span>
+    <span class="ticker-item"><span>✦</span>ECONOMY SYSTEM</span>
+    <span class="ticker-item"><span>⚡</span>BUILDING SYSTEM</span>
+    <span class="ticker-item"><span>✦</span>QUEST & MISSION PACK</span>
+    <span class="ticker-item"><span>⚡</span>UPDATE GRATIS SELAMANYA</span>
+    <span class="ticker-item"><span>✦</span>SUPPORT 24/7 VIA DISCORD</span>
+    <span class="ticker-item"><span>⚡</span>FISHING FORGER SCRIPT</span>
+    <span class="ticker-item"><span>✦</span>RPG MAP ASSETS PACK</span>
+    <span class="ticker-item"><span>⚡</span>COMBAT SYSTEM PRO</span>
+    <span class="ticker-item"><span>✦</span>ECONOMY SYSTEM</span>
+    <span class="ticker-item"><span>⚡</span>BUILDING SYSTEM</span>
+    <span class="ticker-item"><span>✦</span>QUEST & MISSION PACK</span>
+    <span class="ticker-item"><span>⚡</span>UPDATE GRATIS SELAMANYA</span>
+    <span class="ticker-item"><span>✦</span>SUPPORT 24/7 VIA DISCORD</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-orb"></div>
+  <div class="corner corner-tl"></div><div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div><div class="corner corner-br"></div>
+  <div class="pf pf1">🎣</div><div class="pf pf2">⚔️</div>
+  <div class="pf pf3">🗺️</div><div class="pf pf4">💎</div>
+  <div class="hero-eyebrow">✦ PREMIUM ROBLOX DEVELOPER ✦</div>
+  <div class="hero-pixel">
+    <div class="px-e"></div><div class="px-e"></div><div class="px-e"></div><div class="px-c"></div><div class="px-e"></div><div class="px-e"></div><div class="px-e"></div>
+    <div class="px-e"></div><div class="px-g"></div><div class="px-e"></div><div class="px-c"></div><div class="px-e"></div><div class="px-g"></div><div class="px-e"></div>
+    <div class="px-e"></div><div class="px-e"></div><div class="px-c"></div><div class="px-c"></div><div class="px-c"></div><div class="px-e"></div><div class="px-e"></div>
+    <div class="px-c"></div><div class="px-c"></div><div class="px-c"></div><div class="px-g"></div><div class="px-c"></div><div class="px-c"></div><div class="px-c"></div>
+    <div class="px-e"></div><div class="px-e"></div><div class="px-c"></div><div class="px-c"></div><div class="px-c"></div><div class="px-e"></div><div class="px-e"></div>
+    <div class="px-e"></div><div class="px-g"></div><div class="px-e"></div><div class="px-c"></div><div class="px-e"></div><div class="px-g"></div><div class="px-e"></div>
+    <div class="px-e"></div><div class="px-e"></div><div class="px-e"></div><div class="px-c"></div><div class="px-e"></div><div class="px-e"></div><div class="px-e"></div>
+  </div>
+  <h1 class="hero-title">FROSTXA DEV</h1>
+  <p class="hero-sub">Scripts &amp; Assets Roblox Berkualitas Premium</p>
+  <div class="hero-tags">
+    <span class="tag">⚡ LUASCRIPT</span>
+    <span class="tag">🗺️ MAP ASSETS</span>
+    <span class="tag">🎮 GAME SYSTEM</span>
+    <span class="tag">💎 PREMIUM</span>
+    <span class="tag">✓ ANTI-CHEAT</span>
+  </div>
+  <div class="hero-cta">
+    <a href="#products" class="btn-p">▶ LIHAT PRODUK</a>
+    <a href="#order" class="btn-o">📋 ORDER SEKARANG</a>
+  </div>
+</section>
+
+<!-- PROMO COUNTDOWN -->
+<div class="promo-bar">
+  <span class="promo-badge">🔥 PROMO</span>
+  <span class="promo-text">DISKON 20% — BERAKHIR DALAM:</span>
+  <div class="countdown">
+    <div class="cd-block"><span class="cd-num" id="cd-h">00</span><span class="cd-lbl">JAM</span></div>
+    <span class="cd-sep">:</span>
+    <div class="cd-block"><span class="cd-num" id="cd-m">00</span><span class="cd-lbl">MENIT</span></div>
+    <span class="cd-sep">:</span>
+    <div class="cd-block"><span class="cd-num" id="cd-s">00</span><span class="cd-lbl">DETIK</span></div>
+  </div>
+  <a href="#order" class="btn-p" style="font-size:8px;padding:10px 20px;">KLAIM DISKON</a>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <p class="sec-lbl">// KOLEKSI SCRIPT & ASSET</p>
+      <h2 class="sec-title">PRODUK <em>UNGGULAN</em></h2>
+      <div class="sec-line"></div>
+    </div>
+
+    <!-- Search & Filter -->
+    <div class="reveal">
+      <div class="search-bar">
+        <input class="search-input" type="text" id="searchInput" placeholder="Cari script atau asset..." oninput="filterProducts()">
+        <button class="search-btn">🔍</button>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="setFilter('all',this)">SEMUA</button>
+        <button class="filter-btn" onclick="setFilter('script',this)">SCRIPT</button>
+        <button class="filter-btn" onclick="setFilter('asset',this)">ASSET</button>
+        <button class="filter-btn" onclick="setFilter('system',this)">GAME SYSTEM</button>
+        <button class="filter-btn" onclick="sortByPrice()">HARGA ↕</button>
+      </div>
+    </div>
+
+    <div class="products-grid reveal-stagger" id="productsGrid">
+
+      <div class="p-card" data-cat="script" data-price="150000">
+        <div class="p-thumb t-fish"><div class="p-icon">🎣</div><div class="p-badge badge-hot">🔥 BEST SELLER</div></div>
+        <div class="p-body">
+          <p class="p-cat">SCRIPT // GAME SYSTEM</p>
+          <h3 class="p-name">Fishing Forger Script</h3>
+          <div class="p-stars">★★★★★ <span class="p-review-count">(24 ulasan)</span></div>
+          <p class="p-desc">Sistem memancing lengkap dengan XP, inventory, leaderboard global, dan 50+ jenis ikan.</p>
+          <div class="p-feats">
+            <div class="p-feat">50+ Jenis Ikan dengan rarity tier</div>
+            <div class="p-feat">Sistem XP & Level-up otomatis</div>
+            <div class="p-feat">Global Leaderboard real-time</div>
+          </div>
+          <div class="p-foot">
+            <div><p class="p-price-orig">Rp 187.500</p><p class="p-price">Rp 150.000</p></div>
+            <button class="p-buy" onclick="orderProduct('Fishing Forger Script','Rp 150.000')">ORDER ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card" data-cat="asset" data-price="200000">
+        <div class="p-thumb t-map"><div class="p-icon">🗺️</div><div class="p-badge badge-pop">⭐ POPULER</div></div>
+        <div class="p-body">
+          <p class="p-cat">ASSET // MAP PACK</p>
+          <h3 class="p-name">RPG Map Assets Pack</h3>
+          <div class="p-stars">★★★★★ <span class="p-review-count">(18 ulasan)</span></div>
+          <p class="p-desc">200+ model pixel art bertekstur tinggi untuk game RPG: dungeon, town, alam, kastil.</p>
+          <div class="p-feats">
+            <div class="p-feat">200+ Model siap pakai</div>
+            <div class="p-feat">Terrain & water system</div>
+            <div class="p-feat">Optimized LOD rendering</div>
+          </div>
+          <div class="p-foot">
+            <div><p class="p-price-orig">Rp 250.000</p><p class="p-price">Rp 200.000</p></div>
+            <button class="p-buy" onclick="orderProduct('RPG Map Assets Pack','Rp 200.000')">ORDER ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card" data-cat="script system" data-price="250000">
+        <div class="p-thumb t-combat"><div class="p-icon">⚔️</div><div class="p-badge badge-new">✦ NEW</div></div>
+        <div class="p-body">
+          <p class="p-cat">SCRIPT // COMBAT</p>
+          <h3 class="p-name">Combat System Pro</h3>
+          <div class="p-stars">★★★★★ <span class="p-review-count">(12 ulasan)</span></div>
+          <p class="p-desc">Sistem pertarungan advanced: combo chain, 30+ skill, hitbox presisi, efek visual kelas AAA.</p>
+          <div class="p-feats">
+            <div class="p-feat">30+ Skill dengan animasi custom</div>
+            <div class="p-feat">Combo chain & counter system</div>
+            <div class="p-feat">Server-sided & anti-cheat ready</div>
+          </div>
+          <div class="p-foot">
+            <div><p class="p-price-orig">Rp 312.500</p><p class="p-price">Rp 250.000</p></div>
+            <button class="p-buy" onclick="orderProduct('Combat System Pro','Rp 250.000')">ORDER ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card" data-cat="script system" data-price="180000">
+        <div class="p-thumb t-eco"><div class="p-icon">💰</div><div class="p-badge badge-pop">⭐ POPULER</div></div>
+        <div class="p-body">
+          <p class="p-cat">SCRIPT // ECONOMY</p>
+          <h3 class="p-name">Economy System</h3>
+          <div class="p-stars">★★★★☆ <span class="p-review-count">(20 ulasan)</span></div>
+          <p class="p-desc">Sistem ekonomi in-game komplet: bank, toko, trading peer-to-peer, dan double currency.</p>
+          <div class="p-feats">
+            <div class="p-feat">Dual currency (coin & premium)</div>
+            <div class="p-feat">Player trading system</div>
+            <div class="p-feat">DataStore v2 integration</div>
+          </div>
+          <div class="p-foot">
+            <div><p class="p-price-orig">Rp 225.000</p><p class="p-price">Rp 180.000</p></div>
+            <button class="p-buy" onclick="orderProduct('Economy System','Rp 180.000')">ORDER ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card" data-cat="script system" data-price="220000">
+        <div class="p-thumb t-build"><div class="p-icon">🏰</div><div class="p-badge badge-prem">💎 PREMIUM</div></div>
+        <div class="p-body">
+          <p class="p-cat">SCRIPT // BUILDING</p>
+          <h3 class="p-name">Building System</h3>
+          <div class="p-stars">★★★★★ <span class="p-review-count">(9 ulasan)</span></div>
+          <p class="p-desc">Sandbox builder: grid snap, rotasi bebas, save/load per player, dan plot management.</p>
+          <div class="p-feats">
+            <div class="p-feat">Grid & free placement mode</div>
+            <div class="p-feat">Save/Load per-player cloud</div>
+            <div class="p-feat">Blueprint & sharing system</div>
+          </div>
+          <div class="p-foot">
+            <div><p class="p-price-orig">Rp 275.000</p><p class="p-price">Rp 220.000</p></div>
+            <button class="p-buy" onclick="orderProduct('Building System','Rp 220.000')">ORDER ▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-card" data-cat="script system" data-price="190000">
+        <div class="p-thumb t-quest"><div class="p-icon">📜</div><div class="p-badge badge-hot">🔥 TERLARIS</div></div>
+        <div class="p-body">
+          <p class="p-cat">SCRIPT // QUEST SYSTEM</p>
+          <h3 class="p-name">Quest & Mission Pack</h3>
+          <div class="p-stars">★★★★★ <span class="p-review-count">(31 ulasan)</span></div>
+          <p class="p-desc">Sistem quest modular: 100+ template siap pakai, tracking otomatis, reward UI premium.</p>
+          <div class="p-feats">
+            <div class="p-feat">100+ Quest template siap pakai</div>
+            <div class="p-feat">Chain quest & branching story</div>
+            <div class="p-feat">Reward & achievement UI</div>
+          </div>
+          <div class="p-foot">
+            <div><p class="p-price-orig">Rp 237.500</p><p class="p-price">Rp 190.000</p></div>
+            <button class="p-buy" onclick="orderProduct('Quest & Mission Pack','Rp 190.000')">ORDER ▶</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section class="port-section" id="portfolio">
+  <div class="wrap" style="padding-bottom:0;">
+    <div class="sec-hdr reveal">
+      <p class="sec-lbl">// KARYA TERPILIH</p>
+      <h2 class="sec-title">PORTFOLIO <em>KAMI</em></h2>
+      <div class="sec-line"></div>
+    </div>
+  </div>
+  <div class="port-grid reveal-stagger">
+    <div class="port-item"><div class="port-bg pb1">🎣</div><div class="port-ov"><p class="port-ov-title">OCEAN FISHER</p><p class="port-ov-desc">Game memancing open-world dengan 80+ spesies.</p><span class="port-ov-tag">10K+ VISITS</span></div></div>
+    <div class="port-item"><div class="port-bg pb2">⚔️</div><div class="port-ov"><p class="port-ov-title">PIXEL QUEST RPG</p><p class="port-ov-desc">RPG dengan 50+ chapter dan combat system.</p><span class="port-ov-tag">25K+ VISITS</span></div></div>
+    <div class="port-item"><div class="port-bg pb3">🏙️</div><div class="port-ov"><p class="port-ov-title">FROST CITY</p><p class="port-ov-desc">City builder dengan ekonomi dinamis.</p><span class="port-ov-tag">8K+ VISITS</span></div></div>
+    <div class="port-item"><div class="port-bg pb4">🌲</div><div class="port-ov"><p class="port-ov-title">SURVIVAL WILDS</p><p class="port-ov-desc">Survival game dengan crafting & base building.</p><span class="port-ov-tag">15K+ VISITS</span></div></div>
+    <div class="port-item"><div class="port-bg pb5">🏰</div><div class="port-ov"><p class="port-ov-title">CASTLE WARS</p><p class="port-ov-desc">Tower defense PvP dengan 40+ unit.</p><span class="port-ov-tag">20K+ VISITS</span></div></div>
+    <div class="port-item"><div class="port-bg pb6">🚀</div><div class="port-ov"><p class="port-ov-title">SPACE MINER</p><p class="port-ov-desc">Mining game di luar angkasa procedural.</p><span class="port-ov-tag">12K+ VISITS</span></div></div>
+  </div>
+  <div class="stats-row reveal-stagger">
+    <div class="stat-cell"><span class="stat-num" data-target="90">0</span><span class="stat-lbl">TOTAL KLIEN</span></div>
+    <div class="stat-cell"><span class="stat-num" data-target="150">0</span><span class="stat-lbl">SCRIPTS DIJUAL</span></div>
+    <div class="stat-cell"><span class="stat-num" data-target="500">0</span><span class="stat-lbl">JAM DEVELOPMENT</span></div>
+    <div class="stat-cell"><span class="stat-num" data-target="99">0</span><span class="stat-lbl">% KEPUASAN</span></div>
+  </div>
+</section>
+
+<!-- ORDER SECTION -->
+<section class="order-section" id="order">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <p class="sec-lbl">// PEMBELIAN & KONTAK</p>
+      <h2 class="sec-title">ORDER <em>SEKARANG</em></h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="order-grid">
+      <!-- Contact Info -->
+      <div class="order-info reveal">
+        <p style="font-family:var(--px);font-size:10px;color:var(--ice);margin-bottom:10px;">HUBUNGI KAMI LANGSUNG</p>
+        <p style="font-size:13px;color:#3a6a7a;line-height:1.8;margin-bottom:20px;">Hubungi tim kami melalui platform di bawah. Kami siap membantu proses order dan konsultasi produk 24/7.</p>
+        <div class="order-contact-cards">
+          <a class="contact-card wa" href="https://wa.me/6285695115905?text=Halo%20Frostxa%20Dev!%20Saya%20tertarik%20membeli%20script%20Roblox." target="_blank">
+            <div class="cc-icon">💬</div>
+            <div class="cc-body">
+              <p class="cc-label wa">WHATSAPP</p>
+              <p class="cc-val">+62 856-9511-5905</p>
+            </div>
+            <span class="cc-arr">→</span>
+          </a>
+          <a class="contact-card mail" href="mailto:frostxa60@gmail.com?subject=Order%20Script%20Roblox&body=Halo%20Frostxa%20Dev,%20saya%20ingin%20memesan%20produk." target="_blank">
+            <div class="cc-icon">📧</div>
+            <div class="cc-body">
+              <p class="cc-label mail">EMAIL</p>
+              <p class="cc-val">frostxa60@gmail.com</p>
+            </div>
+            <span class="cc-arr">→</span>
+          </a>
+          <a class="contact-card disc" href="https://discord.gg/zqjjXTaT7" target="_blank">
+            <div class="cc-icon">🎮</div>
+            <div class="cc-body">
+              <p class="cc-label disc">DISCORD SERVER</p>
+              <p class="cc-val">discord.gg/zqjjXTaT7</p>
+            </div>
+            <span class="cc-arr">→</span>
+          </a>
+        </div>
+        <div style="margin-top:24px;background:var(--card);border:1px solid rgba(0,255,136,.15);padding:16px 20px;">
+          <p style="font-family:var(--px);font-size:9px;color:var(--green);margin-bottom:8px;">✓ JAMINAN KAMI</p>
+          <p style="font-size:12px;color:#3a6a5a;line-height:1.8;">• Respon dalam 1x24 jam<br>• Source code penuh & dokumentasi<br>• Revisi gratis jika ada bug<br>• Update berkala selamanya</p>
+        </div>
+      </div>
+      <!-- Order Form -->
+      <div class="order-form-wrap reveal">
+        <p class="form-title">📋 FORM <span>ORDER</span></p>
+        <div class="form-group">
+          <label class="form-label">NAMA LENGKAP</label>
+          <input class="form-input" type="text" id="f-name" placeholder="Nama kamu...">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">NO. WHATSAPP</label>
+            <input class="form-input" type="text" id="f-wa" placeholder="08xx...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">USERNAME DISCORD</label>
+            <input class="form-input" type="text" id="f-disc" placeholder="user#0000">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">PRODUK YANG DIINGINKAN</label>
+          <select class="form-select" id="f-prod">
+            <option value="">— Pilih Produk —</option>
+            <option>Fishing Forger Script — Rp 150.000</option>
+            <option>RPG Map Assets Pack — Rp 200.000</option>
+            <option>Combat System Pro — Rp 250.000</option>
+            <option>Economy System — Rp 180.000</option>
+            <option>Building System — Rp 220.000</option>
+            <option>Quest & Mission Pack — Rp 190.000</option>
+            <option>Paket Developer (3 script) — Rp 450.000</option>
+            <option>Paket Studio (semua) — Rp 900.000</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">METODE PEMBAYARAN</label>
+          <div class="payment-opts" id="payOpts">
+            <div class="pay-opt sel" onclick="selectPay(this)">QRIS</div>
+            <div class="pay-opt" onclick="selectPay(this)">DANA</div>
+            <div class="pay-opt" onclick="selectPay(this)">OVO</div>
+            <div class="pay-opt" onclick="selectPay(this)">GOPAY</div>
+            <div class="pay-opt" onclick="selectPay(this)">BCA</div>
+            <div class="pay-opt" onclick="selectPay(this)">MANDIRI</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">CATATAN / REQUEST TAMBAHAN</label>
+          <textarea class="form-textarea" id="f-note" placeholder="Ceritakan kebutuhan atau pertanyaan kamu..."></textarea>
+        </div>
+        <button class="form-submit" onclick="submitOrder()">📤 KIRIM ORDER VIA WHATSAPP</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="reviews-section" id="reviews">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <p class="sec-lbl">// ULASAN PEMBELI</p>
+      <h2 class="sec-title">KATA <em>MEREKA</em></h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="reviews-grid reveal-stagger">
+      <div class="rv-card">
+        <div class="rv-q">"</div>
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">Fishing Forger Script-nya luar biasa! Kodenya bersih, dokumentasi lengkap, dan supportnya super cepat. Langsung jalan tanpa error. Highly recommend!</p>
+        <div class="rv-foot">
+          <div class="rv-av">🦊</div>
+          <div><p class="rv-name">FOXDEV_RBX</p><p class="rv-role">Roblox Game Developer</p></div>
+          <span class="rv-verified">✓ TERVERIFIKASI</span>
+        </div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-q">"</div>
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">RPG Map Assets Pack menghemat waktu saya berbulan-bulan. Modelnya detail dan performa di game sangat smooth. Worth every rupiah!</p>
+        <div class="rv-foot">
+          <div class="rv-av">🐺</div>
+          <div><p class="rv-name">WOLFSTUDIO_</p><p class="rv-role">Roblox Studio Artist</p></div>
+          <span class="rv-verified">✓ TERVERIFIKASI</span>
+        </div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-q">"</div>
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">Combat System Pro terbaik yang pernah saya coba. Anti-cheat solid, combo system terasa premium. Game saya jadi jauh lebih hidup!</p>
+        <div class="rv-foot">
+          <div class="rv-av">🦅</div>
+          <div><p class="rv-name">EAGLE_CODER</p><p class="rv-role">Roblox Scripter</p></div>
+          <span class="rv-verified">✓ TERVERIFIKASI</span>
+        </div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-q">"</div>
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">Pelayanannya ramah dan profesional. Order jam 10 malam langsung direspons. Script-nya juga bisa di-custom sesuai kebutuhan game saya.</p>
+        <div class="rv-foot">
+          <div class="rv-av">🐯</div>
+          <div><p class="rv-name">TIGERDEV99</p><p class="rv-role">Indie Game Studio</p></div>
+          <span class="rv-verified">✓ TERVERIFIKASI</span>
+        </div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-q">"</div>
+        <div class="rv-stars">★★★★★</div>
+        <p class="rv-text">Quest & Mission Pack benar-benar menghemat waktu! Template-nya tinggal edit sedikit langsung jalan. Support sangat membantu setup pertama kali.</p>
+        <div class="rv-foot">
+          <div class="rv-av">🦁</div>
+          <div><p class="rv-name">LIONSCRIPT</p><p class="rv-role">Roblox Developer</p></div>
+          <span class="rv-verified">✓ TERVERIFIKASI</span>
+        </div>
+      </div>
+      <div class="rv-card">
+        <div class="rv-q">"</div>
+        <div class="rv-stars">★★★★☆</div>
+        <p class="rv-text">Economy System lengkap sekali, fiturnya banyak dan semua berjalan lancar. Dokumentasinya jelas. Satu-satunya saran: tambahin video tutorial setup.</p>
+        <div class="rv-foot">
+          <div class="rv-av">🐉</div>
+          <div><p class="rv-name">DRAGONBYTE</p><p class="rv-role">Roblox Scripter</p></div>
+          <span class="rv-verified">✓ TERVERIFIKASI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <p class="sec-lbl">// PERTANYAAN UMUM</p>
+      <h2 class="sec-title">FAQ <em>& BANTUAN</em></h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Bagaimana cara membeli script? <span class="faq-arrow">▼</span></div><div class="faq-a">Isi form order di atas atau langsung hubungi kami via WhatsApp/Discord. Setelah konfirmasi produk, lakukan pembayaran, dan script akan dikirim dalam 1-24 jam via DM Discord atau email.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Apakah ada garansi dan update gratis? <span class="faq-arrow">▼</span></div><div class="faq-a">Ya! Semua produk mendapat garansi bug fix gratis. Update konten/fitur gratis selama 6 bulan untuk paket Developer, dan selamanya untuk paket Studio.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Metode pembayaran apa saja yang diterima? <span class="faq-arrow">▼</span></div><div class="faq-a">Kami menerima QRIS, Dana, OVO, GoPay, Transfer BCA, dan Transfer Mandiri. Semua transaksi aman dan terkonfirmasi secara manual oleh tim kami.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Apakah bisa request fitur custom? <span class="faq-arrow">▼</span></div><div class="faq-a">Tentu! Paket Studio sudah termasuk 1x custom request gratis. Untuk paket lainnya, custom request tersedia dengan biaya tambahan tergantung kompleksitas fitur. Hubungi kami untuk konsultasi.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Apakah script aman dari anti-cheat Roblox? <span class="faq-arrow">▼</span></div><div class="faq-a">Semua script kami adalah server-sided dan mengikuti ToS Roblox. Script didesain agar kompatibel dengan sistem keamanan Roblox dan tidak melanggar kebijakan platform.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Berapa lama script dikirim setelah pembayaran? <span class="faq-arrow">▼</span></div><div class="faq-a">Script biasanya dikirim dalam 1-6 jam setelah pembayaran dikonfirmasi. Maksimal 1x24 jam. Jika ada keterlambatan, kami akan proaktif mengabari kamu via WhatsApp atau Discord.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Apakah ada refund jika script tidak sesuai? <span class="faq-arrow">▼</span></div><div class="faq-a">Kami tidak menyediakan refund setelah script dikirim, namun kami memberikan garansi revisi penuh jika ada bug atau script tidak berfungsi sesuai deskripsi. Kepuasan kamu adalah prioritas kami.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="price-section" id="pricing">
+  <div class="wrap">
+    <div class="sec-hdr reveal">
+      <p class="sec-lbl">// PAKET BUNDEL</p>
+      <h2 class="sec-title">PILIH <em>PAKETMU</em></h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="price-grid reveal-stagger">
+      <div class="pc">
+        <p class="pc-plan">STARTER</p>
+        <p class="pc-amount">Rp 150K</p>
+        <p class="pc-period">per script pilihan</p>
+        <ul class="pc-items">
+          <li>1 Script pilihan</li>
+          <li>Source code penuh</li>
+          <li>Dokumentasi dasar</li>
+          <li>Support 7 hari</li>
+          <li class="off">Update gratis</li>
+          <li class="off">Custom request</li>
+        </ul>
+        <button class="pc-btn" onclick="orderProduct('Paket Starter','Rp 150.000')">PILIH PAKET</button>
+      </div>
+      <div class="pc feat">
+        <div class="pc-top-badge">✦ TERPOPULER</div>
+        <p class="pc-plan">DEVELOPER</p>
+        <p class="pc-amount">Rp 450K</p>
+        <p class="pc-period">3 script pilihanmu</p>
+        <ul class="pc-items">
+          <li>3 Script pilihanmu</li>
+          <li>Source code penuh</li>
+          <li>Dokumentasi lengkap</li>
+          <li>Support 30 hari</li>
+          <li>Update gratis 6 bulan</li>
+          <li class="off">Custom request</li>
+        </ul>
+        <button class="pc-btn" onclick="orderProduct('Paket Developer','Rp 450.000')">PILIH PAKET</button>
+      </div>
+      <div class="pc">
+        <p class="pc-plan">STUDIO</p>
+        <p class="pc-amount">Rp 900K</p>
+        <p class="pc-period">semua script & asset</p>
+        <ul class="pc-items">
+          <li>Semua script & asset</li>
+          <li>Source code penuh</li>
+          <li>Dokumentasi premium</li>
+          <li>Support lifetime</li>
+          <li>Update gratis selamanya</li>
+          <li>1x Custom request gratis</li>
+        </ul>
+        <button class="pc-btn" onclick="orderProduct('Paket Studio','Rp 900.000')">PILIH PAKET</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-logo">❄ FROSTXA DEV</div>
+  <div class="foot-copy">© 2024 Frostxa Dev. Script dilindungi lisensi.<br>WA: 085695115905 | frostxa60@gmail.com</div>
+  <div class="foot-links">
+    <a href="https://wa.me/6285695115905" target="_blank">WhatsApp</a>
+    <a href="mailto:frostxa60@gmail.com">Email</a>
+    <a href="https://discord.gg/zqjjXTaT7" target="_blank">Discord</a>
+  </div>
+</footer>
+
+<!-- LIVE CHAT WIDGET -->
+<div class="chat-widget">
+  <div class="chat-panel" id="chatPanel">
+    <div class="chat-head">
+      <div>
+        <p class="chat-head-title">❄ FROSTXA SUPPORT</p>
+        <p class="chat-head-sub" id="chatStatus">● Online — Siap membantu!</p>
+      </div>
+      <button class="chat-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-body">
+      <div class="chat-msg">👋 Halo! Selamat datang di <strong>Frostxa Dev</strong>. Ada yang bisa kami bantu?</div>
+      <div class="chat-options">
+        <a class="chat-opt-btn wa" href="https://wa.me/6285695115905?text=Halo%20Frostxa%20Dev!%20Saya%20mau%20tanya%20tentang%20script%20Roblox." target="_blank">💬 Chat via WhatsApp</a>
+        <a class="chat-opt-btn disc" href="https://discord.gg/zqjjXTaT7" target="_blank">🎮 Gabung Discord Server</a>
+        <a class="chat-opt-btn" href="mailto:frostxa60@gmail.com" target="_blank">📧 Kirim Email</a>
+        <button class="chat-opt-btn" onclick="scrollToSection('products')">🛒 Lihat Produk</button>
+        <button class="chat-opt-btn" onclick="scrollToSection('faq')">❓ Lihat FAQ</button>
+      </div>
+    </div>
+  </div>
+  <button class="chat-bubble" onclick="toggleChat()">
+    💬
+    <div class="chat-notif"></div>
+  </button>
+</div>
+
+<script>
+/* CURSOR */
+const cursor=document.getElementById('cursor');
+document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,.p-card,.port-item,.faq-q,.pay-opt').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cursor.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cursor.classList.remove('big'));
+});
+
+/* STARS */
+(function(){
+  const canvas=document.getElementById('stars-canvas');
+  const ctx=canvas.getContext('2d');
+  let stars=[];
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+  function init(){stars=[];for(let i=0;i<120;i++){stars.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,size:Math.random()<.5?1:2,alpha:Math.random(),speed:.002+Math.random()*.003,color:Math.random()<.3?'#ffd700':'#a8f0ff'});}}
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{s.alpha+=s.speed;if(s.alpha>1){s.alpha=0;s.x=Math.random()*canvas.width;s.y=Math.random()*canvas.height;}ctx.globalAlpha=Math.sin(s.alpha*Math.PI)*.65;ctx.fillStyle=s.color;ctx.fillRect(Math.round(s.x),Math.round(s.y),s.size,s.size);});
+    ctx.globalAlpha=1;requestAnimationFrame(draw);
+  }
+  resize();init();draw();
+  window.addEventListener('resize',()=>{resize();init();});
+})();
+
+/* COUNTDOWN — 23h 59m 59s dari sekarang */
+(function(){
+  const end=new Date().getTime()+24*60*60*1000-1000;
+  function tick(){
+    const now=new Date().getTime();const diff=Math.max(0,end-now);
+    const h=Math.floor(diff/3600000);const m=Math.floor((diff%3600000)/60000);const s=Math.floor((diff%60000)/1000);
+    document.getElementById('cd-h').textContent=String(h).padStart(2,'0');
+    document.getElementById('cd-m').textContent=String(m).padStart(2,'0');
+    document.getElementById('cd-s').textContent=String(s).padStart(2,'0');
+  }
+  tick();setInterval(tick,1000);
+})();
+
+/* STATUS ONLINE/OFFLINE (08.00 - 23.00 WIB) */
+(function(){
+  const h=new Date().getHours();
+  const online=h>=8&&h<23;
+  const dot=document.getElementById('statusDot');
+  const lbl=document.getElementById('statusLabel');
+  const chatSt=document.getElementById('chatStatus');
+  if(!online){dot.classList.remove('online');dot.classList.add('offline');lbl.textContent='OFFLINE';lbl.style.color='#ff4444';chatSt.textContent='⚪ Offline — Balas dalam 1x24 jam';}
+})();
+
+/* REVEAL ON SCROLL */
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.1});
+document.querySelectorAll('.reveal,.reveal-stagger').forEach(el=>obs.observe(el));
+
+/* COUNTER ANIMATION */
+const cObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){const el=e.target;const target=parseInt(el.dataset.target);let cur=0;const step=Math.ceil(target/60);const iv=setInterval(()=>{cur=Math.min(cur+step,target);el.textContent=cur+(el.dataset.suf||'');if(cur>=target)clearInterval(iv);},24);cObs.unobserve(el);}});},{threshold:.5});
+document.querySelectorAll('[data-target]').forEach(el=>cObs.observe(el));
+
+/* FILTER & SEARCH */
+let currentFilter='all';let priceAsc=true;
+function setFilter(cat,btn){
+  currentFilter=cat;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');filterProducts();
+}
+function filterProducts(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.p-card').forEach(card=>{
+    const name=card.querySelector('.p-name').textContent.toLowerCase();
+    const cats=card.dataset.cat||'';
+    const matchCat=currentFilter==='all'||cats.includes(currentFilter);
+    const matchQ=!q||name.includes(q);
+    card.classList.toggle('hidden',!(matchCat&&matchQ));
+  });
+}
+function sortByPrice(){
+  const grid=document.getElementById('productsGrid');
+  const cards=[...grid.querySelectorAll('.p-card')];
+  cards.sort((a,b)=>priceAsc?(parseInt(a.dataset.price)-parseInt(b.dataset.price)):(parseInt(b.dataset.price)-parseInt(a.dataset.price)));
+  priceAsc=!priceAsc;cards.forEach(c=>grid.appendChild(c));
+}
+
+/* PAYMENT SELECT */
+function selectPay(el){document.querySelectorAll('.pay-opt').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');}
+
+/* SUBMIT ORDER → WA */
+function submitOrder(){
+  const name=document.getElementById('f-name').value.trim();
+  const wa=document.getElementById('f-wa').value.trim();
+  const disc=document.getElementById('f-disc').value.trim();
+  const prod=document.getElementById('f-prod').value;
+  const pay=document.querySelector('.pay-opt.sel')?.textContent||'QRIS';
+  const note=document.getElementById('f-note').value.trim();
+  if(!name||!prod){showToast('⚠ Isi nama dan produk dulu!','#ff3cac');return;}
+  const msg=`Halo Frostxa Dev! 👋%0A%0A*ORDER SCRIPT/ASSET*%0A━━━━━━━━━━━━━━━━%0A👤 Nama: ${encodeURIComponent(name)}%0A📱 WA: ${encodeURIComponent(wa)}%0A🎮 Discord: ${encodeURIComponent(disc||'-')}%0A📦 Produk: ${encodeURIComponent(prod)}%0A💳 Pembayaran: ${pay}%0A📝 Catatan: ${encodeURIComponent(note||'-')}%0A━━━━━━━━━━━━━━━━%0ATolong bantu proses order saya. Terima kasih!`;
+  window.open(`https://wa.me/6285695115905?text=${msg}`,'_blank');
+  showToast('✓ Mengarahkan ke WhatsApp...');
+}
+
+/* ORDER FROM PRODUCT CARD */
+function orderProduct(name,price){
+  document.getElementById('f-prod').value='';
+  const opts=document.getElementById('f-prod').options;
+  for(let i=0;i<opts.length;i++){if(opts[i].text.startsWith(name)){opts[i].selected=true;break;}}
+  document.querySelector('#order').scrollIntoView({behavior:'smooth'});
+  showToast('✓ Produk dipilih — lengkapi form!');
+}
+
+/* TOAST */
+function showToast(msg,color){
+  const t=document.getElementById('toast');
+  t.textContent=msg||'✓ Mengarahkan ke WhatsApp...';
+  t.style.borderColor=color||'var(--green)';
+  t.style.color=color||'var(--green)';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* FAQ */
+function toggleFaq(el){
+  const item=el.parentElement;
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+}
+
+/* CHAT WIDGET */
+function toggleChat(){document.getElementById('chatPanel').classList.toggle('open');}
+function scrollToSection(id){document.getElementById(id).scrollIntoView({behavior:'smooth'});document.getElementById('chatPanel').classList.remove('open');}
+
+/* CARD TILT */
+document.querySelectorAll('.p-card').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    card.style.transform=`translateY(-5px) rotateX(${-y*5}deg) rotateY(${x*5}deg)`;
+  });
+  card.addEventListener('mouseleave',()=>{card.style.transform='';});
+});
+
+/* SMOOTH SCROLL */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const id=a.getAttribute('href');
+    if(id.length>1){e.preventDefault();document.querySelector(id)?.scrollIntoView({behavior:'smooth'});}
+  });
+});
+
+/* NAV ACTIVE */
+window.addEventListener('scroll',()=>{
+  let cur='';
+  document.querySelectorAll('section[id]').forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});
+  document.querySelectorAll('.nav-links a').forEach(a=>{
+    a.classList.toggle('active',a.getAttribute('href')==='#'+cur);
+  });
+},{passive:true});
+</script>
+</body>
+</html>
